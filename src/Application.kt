@@ -22,10 +22,10 @@ val DOTENV = dotenv()
 val TBA_API_KEY = DOTENV["TBA_AUTH_KEY"] ?: ""
 
 
-fun getFromTba(endpoint: String): Response {
-    val url = "https://www.thebluealliance.com/api/v3/${endpoint.trimStart('/')}"
-    return get(url = url, headers = mapOf("X-TBA-Auth-Key" to TBA_API_KEY))
-}
+fun getFromTba(endpoint: String): Response = get(
+    url = "https://www.thebluealliance.com/api/v3/${endpoint.trimStart('/')}",
+    headers = mapOf("X-TBA-Auth-Key" to TBA_API_KEY)
+)
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
