@@ -50,8 +50,8 @@ fun Application.module(testing: Boolean = false) {
 
     routing {
         get("/team/{teamNumber}") {
-            val endpoint = "/team/frc${call.parameters["teamNumber"]}"
-            call.respond(mapOf("teamNumber" to String(getFromTba(endpoint).content)))
+            val teamNumber = "${call.parameters["teamNumber"]}"
+            call.respond(mapOf(teamNumber to String(getFromTba("/team/frc$teamNumber").content)))
         }
     }
 }
