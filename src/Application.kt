@@ -1,21 +1,31 @@
 package com.example
 
-import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
-import io.ktor.routing.*
-import io.ktor.http.*
-import io.ktor.content.*
-import io.ktor.http.content.*
-import io.ktor.features.*
-import com.fasterxml.jackson.databind.*
-import io.ktor.jackson.*
-import io.ktor.client.*
-import io.ktor.client.engine.jetty.*
-import io.ktor.client.features.json.*
-import io.ktor.client.request.*
-import kotlinx.coroutines.*
-import io.ktor.client.features.logging.*
+
+import com.fasterxml.jackson.databind.SerializationFeature
+import io.github.cdimascio.dotenv.dotenv
+import io.ktor.application.Application
+import io.ktor.application.call
+import io.ktor.application.install
+import io.ktor.features.CORS
+import io.ktor.features.ContentNegotiation
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
+import io.ktor.jackson.jackson
+import io.ktor.response.respond
+import io.ktor.routing.get
+import io.ktor.routing.routing
+import khttp.get
+import khttp.responses.Response
+
+
+val DOTENV = dotenv()
+val TBA_API_KEY = DOTENV["TBA_AUTH_KEY"] ?: ""
+
+
+fun getFromTba(endpoint: String): Response {
+    val url = "https://www.thebluealliance.com/api/v3/${endpoint.trimStart('/')}"
+    return get(url = url, headers = mapOf("X-TBA-Auth-Key" to TBA_API_KEY))
+}
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -28,9 +38,8 @@ fun Application.module(testing: Boolean = false) {
         method(HttpMethod.Delete)
         method(HttpMethod.Patch)
         header(HttpHeaders.Authorization)
-        header("MyCustomHeader")
         allowCredentials = true
-        anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
+        host("www.thebluealliance.com/api/v3")
     }
 
     install(ContentNegotiation) {
@@ -39,40 +48,10 @@ fun Application.module(testing: Boolean = false) {
         }
     }
 
-    val client = HttpClient(Jetty) {
-        install(JsonFeature) {
-            serializer = GsonSerializer()
-        }
-        install(Logging) {
-            level = LogLevel.HEADERS
-        }
-    }
-    runBlocking {
-        // Sample for making a HTTP Client request
-        /*
-        val message = client.post<JsonSampleClass> {
-            url("http://127.0.0.1:8080/path/to/endpoint")
-            contentType(ContentType.Application.Json)
-            body = JsonSampleClass(hello = "world")
-        }
-        */
-    }
-
     routing {
-        get("/") {
-            call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
-        }
-
-        // Static feature. Try to access `/static/ktor_logo.svg`
-        static("/static") {
-            resources("static")
-        }
-
-        get("/json/jackson") {
-            call.respond(mapOf("hello" to "world"))
+        get("/team/{teamNumber}") {
+            val endpoint = "/team/frc${call.parameters["teamNumber"]}"
+            call.respond(mapOf("teamNumber" to String(getFromTba(endpoint).content)))
         }
     }
 }
-
-data class JsonSampleClass(val hello: String)
-
