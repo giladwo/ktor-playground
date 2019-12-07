@@ -8,10 +8,11 @@ import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.CORS
 import io.ktor.features.ContentNegotiation
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.jackson.jackson
-import io.ktor.response.respond
+import io.ktor.response.respondText
 import io.ktor.routing.get
 import io.ktor.routing.routing
 import khttp.get
@@ -51,7 +52,10 @@ fun Application.module(testing: Boolean = false) {
     routing {
         get("/team/{teamNumber}") {
             val teamNumber = "${call.parameters["teamNumber"]}"
-            call.respond(mapOf(teamNumber to String(getFromTba("/team/frc$teamNumber").content)))
+            call.respondText(
+                String(getFromTba("/team/frc$teamNumber").content),
+                contentType = ContentType.Application.Json
+            )
         }
     }
 }
