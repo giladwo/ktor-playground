@@ -21,10 +21,11 @@ import khttp.responses.Response
 
 val DOTENV = dotenv()
 val TBA_API_KEY = DOTENV["TBA_AUTH_KEY"] ?: ""
+val TBA_API_ROOT = "www.thebluealliance.com/api/v3"
 
 
 fun getFromTba(endpoint: String): Response = get(
-    url = "https://www.thebluealliance.com/api/v3/${endpoint.trimStart('/')}",
+    url = "https://${TBA_API_ROOT}/${endpoint.trimStart('/')}",
     headers = mapOf("X-TBA-Auth-Key" to TBA_API_KEY)
 )
 
@@ -40,7 +41,7 @@ fun Application.module(testing: Boolean = false) {
         method(HttpMethod.Patch)
         header(HttpHeaders.Authorization)
         allowCredentials = true
-        host("www.thebluealliance.com/api/v3")
+        host(TBA_API_ROOT)
     }
 
     install(ContentNegotiation) {
