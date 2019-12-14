@@ -51,12 +51,13 @@ fun Application.module(testing: Boolean = false) {
     }
 
     routing {
-        get("/team/{teamNumber}") {
-            val teamNumber = "${call.parameters["teamNumber"]}"
-            call.respondText(
-                String(getFromTba("/team/frc$teamNumber").content),
-                contentType = ContentType.Application.Json
-            )
+        get("/tba/{path...}") {
+            call.parameters.getAll("path")?.joinToString("/")?.let {
+                call.respondText(
+                    String(getFromTba(it).content),
+                    contentType = ContentType.Application.Json
+                )
+            }
         }
     }
 }
