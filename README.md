@@ -5,9 +5,9 @@ How to run:
 4. Click on `Create configuration`.
 5. Fill the configuration form:
     1. Main class: `com.example.ApplicationKt`
-    2. Working directory: <your working directory>
+    2. Working directory: `<your working directory>`
     3. Use classpath of module: `example.main` (Choose from the dropdown menu)
-    4. JRE: <choose your JRE>
+    4. JRE: `<your JRE>`
 6. Click `OK`.
 7. A `TBA_AUTH_KEY` environment variable is needed:
     1. Either create an `.env` file containing: `TBA_AUTH_KEY=<your api key>`
